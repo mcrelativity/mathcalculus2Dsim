@@ -1,0 +1,20 @@
+# ── Entornos virtuales ──────────────────────────────
+.venv/
+venv/
+env/
+pyvenv.cfg
+
+# ── Caché de Python ─────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ── Salidas generadas por el programa ───────────────
+graficos_modelo.png
+
+# ── Sistema operativo / editor ──────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
