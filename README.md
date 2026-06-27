@@ -1,4 +1,4 @@
-# Modelo Diferencial de Movimiento 2D
+# Modelo Diferencial de Movimiento 3D y 2D
 ### ABPro — Cálculo Diferencial | INACAP
 
 **Integrantes:** Shaira Camacho · Emiliano Gómez · Gabriel Paredes · Vicente Schute
