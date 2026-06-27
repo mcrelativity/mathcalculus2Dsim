@@ -232,3 +232,107 @@ def obtener_contexto(espacio_global, titulo="Función de posición s(t)"):
             if k in espacio_global
         }
     return pedir_modelo_interactivo(titulo)
+
+
+# ═════════════════════════════════════════════════════
+#  EXTENSIÓN 3D — posición vectorial r(t) = (x(t), y(t), z(t))
+# ═════════════════════════════════════════════════════
+# El cálculo es el mismo de siempre: la velocidad y la aceleración son la
+# primera y la segunda derivada, pero ahora se derivan las TRES componentes.
+#     r(t)  = ( x(t),  y(t),  z(t)  )
+#     v(t)  = r'(t)  = ( x'(t),  y'(t),  z'(t)  )
+#     a(t)  = r''(t) = ( x''(t), y''(t), z''(t) )
+
+EJEMPLOS_3D = [
+    (("3*cos(t)", "0.8*t", "3*sin(t)"),          "Hélice ascendente"),
+    (("3*sin(2*t)", "3*sin(3*t)", "3*cos(2*t)"), "Curva de Lissajous 3D"),
+    (("cos(t)*t/3", "t/2", "sin(t)*t/3"),        "Espiral cónica"),
+    (("4*t", "9*t - 4.9*t**2", "0"),             "Tiro parabólico (z=0)"),
+    (("t", "t**3 - 6*t**2 + 9*t", "0"),          "Proyecto original llevado a 3D (z=0)"),
+]
+
+# Claves que componen un contexto 3D (para reutilizarlo entre main.py y la sim).
+_CLAVES_3D = ["_T_MAX", "_es_3d", "_r_str"]
+for _c in ("x", "y", "z"):
+    _CLAVES_3D += [f"_{_c}_func", f"_v{_c}_func", f"_a{_c}_func",
+                   f"_{_c}_str",  f"_v{_c}_str",  f"_a{_c}_str"]
+
+
+def construir_modelo_3d(x_str, y_str, z_str, t_max=10.0):
+    """Construye el contexto 3D: cada componente con su 1ª y 2ª derivada."""
+    componentes = {
+        "x": parsear_expresion(x_str),
+        "y": parsear_expresion(y_str),
+        "z": parsear_expresion(z_str),
+    }
+    ctx = {"_T_MAX": float(t_max), "_es_3d": True}
+    for nombre, s in componentes.items():
+        v = sp.diff(s, t_sym)            # velocidad de esa componente
+        a = sp.diff(v, t_sym)            # aceleración de esa componente
+        ctx[f"_{nombre}_func"]  = _make_callable(s)
+        ctx[f"_v{nombre}_func"] = _make_callable(v)
+        ctx[f"_a{nombre}_func"] = _make_callable(a)
+        ctx[f"_{nombre}_str"]   = str(s)
+        ctx[f"_v{nombre}_str"]  = str(v)
+        ctx[f"_a{nombre}_str"]  = str(a)
+    ctx["_r_str"] = f"({ctx['_x_str']}, {ctx['_y_str']}, {ctx['_z_str']})"
+    return ctx
+
+
+def pedir_modelo_3d_interactivo(titulo="Selecciona la curva r(t) = (x(t), y(t), z(t))"):
+    """Menú de curvas 3D para cuando la simulación se ejecuta sola."""
+    print("\n" + "═" * 60)
+    print(f"  {titulo}")
+    print("═" * 60)
+    for i, (comp, desc) in enumerate(EJEMPLOS_3D, 1):
+        print(f"  [{i}] r(t) = ({comp[0]}, {comp[1]}, {comp[2]})")
+        print(f"        {desc}")
+    print("  [0] Escribir una curva propia")
+    print("─" * 60)
+    print("  Funciones disponibles: sin(t)  cos(t)  exp(t)  sqrt(t)  log(t)")
+    print("─" * 60)
+
+    n_ej = len(EJEMPLOS_3D)
+    while True:
+        op = input(f"  Elige [0-{n_ej}]: ").strip()
+        if op in [str(i) for i in range(1, n_ej + 1)]:
+            x_str, y_str, z_str = EJEMPLOS_3D[int(op) - 1][0]
+        elif op == "0":
+            x_str = input("  x(t) = ").strip() or "0"
+            y_str = input("  y(t) = ").strip() or "0"
+            z_str = input("  z(t) = ").strip() or "0"
+        else:
+            print("  ⚠️  Opción no válida.")
+            continue
+        try:
+            for s in (x_str, y_str, z_str):
+                parsear_expresion(s)
+            break
+        except Exception as e:
+            print(f"  ❌ Error: {e}. Intenta de nuevo.")
+
+    while True:
+        try:
+            raw = input("  Rango de tiempo [0 a ?] (Enter = 10): ").strip()
+            t_max = float(raw) if raw else 10.0
+            if t_max > 0:
+                break
+            print("  ⚠️  Debe ser mayor a 0.")
+        except ValueError:
+            print("  ⚠️  Número inválido.")
+
+    ctx = construir_modelo_3d(x_str, y_str, z_str, t_max)
+
+    print("\n" + "─" * 60)
+    print(f"  r(t)  = {ctx['_r_str']}")
+    print(f"  v(t)  = ({ctx['_vx_str']}, {ctx['_vy_str']}, {ctx['_vz_str']})")
+    print(f"  a(t)  = ({ctx['_ax_str']}, {ctx['_ay_str']}, {ctx['_az_str']})")
+    print("─" * 60)
+    return ctx
+
+
+def obtener_contexto_3d(espacio_global, titulo="Curva r(t) = (x(t), y(t), z(t))"):
+    """Reutiliza el contexto 3D inyectado por main.py, o lo pide al usuario."""
+    if "_x_func" in espacio_global and "_T_MAX" in espacio_global:
+        return {k: espacio_global[k] for k in _CLAVES_3D if k in espacio_global}
+    return pedir_modelo_3d_interactivo(titulo)

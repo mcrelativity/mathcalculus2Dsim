@@ -56,15 +56,16 @@ def menu():
     print("\n" + "═" * 60)
     print("  MODELO DIFERENCIAL — ABPro Cálculo Diferencial")
     print("═" * 60)
-    print("  [1]  Gráficos matemáticos         (Matplotlib)")
-    print("  [2]  Simulación objeto en línea    (Pygame)")
-    print("  [3]  Cohete en plano cartesiano    (Pygame)")
-    print("  [4]  Todo junto (misma función)")
+    print("  [1]  Gráficos matemáticos          (Matplotlib, 2D)")
+    print("  [2]  Simulación objeto en línea     (Pygame, 2D)")
+    print("  [3]  Cohete en plano cartesiano     (Pygame, 2D)")
+    print("  [4]  Cohete en 3D — r(t)=(x,y,z)    (Pygame)")
+    print("  [5]  Todo junto 2D (misma función s(t))")
     print("  [0]  Salir")
     print("─" * 60)
     while True:
         op = input("  Elige una opción: ").strip()
-        if op in ("0", "1", "2", "3", "4"):
+        if op in ("0", "1", "2", "3", "4", "5"):
             return op
         print("  ⚠️  Opción no válida.")
 
@@ -95,6 +96,13 @@ if __name__ == "__main__":
         print("\n  Hasta luego.\n")
         sys.exit(0)
 
+    # La opción 3D usa una curva vectorial r(t)=(x,y,z); el resto usa s(t).
+    if opcion == "4":
+        ctx3d = modelo.pedir_modelo_3d_interactivo(
+            "Selecciona la curva r(t) = (x(t), y(t), z(t))")
+        ejecutar("simulacion_3d.py", ctx3d)
+        sys.exit(0)
+
     ctx = pedir_funcion()
 
     if opcion == "1":
@@ -103,7 +111,7 @@ if __name__ == "__main__":
         ejecutar("simulacion_pygame.py", ctx)
     elif opcion == "3":
         ejecutar("simulacion_cohete.py", ctx)
-    elif opcion == "4":
+    elif opcion == "5":
         ejecutar("graficos.py", ctx)
         ejecutar("simulacion_pygame.py", ctx)
         ejecutar("simulacion_cohete.py", ctx)

@@ -26,6 +26,18 @@ Para la función por defecto:
 > Estos puntos ya **no están fijos en el código**: se calculan automáticamente
 > para cualquier función que elijas (polinómica, sinusoidal, exponencial, etc.).
 
+### Versión 3D (vectorial)
+
+La opción 3D extiende el mismo concepto a una posición **vectorial**
+`r(t) = (x(t), y(t), z(t))`. La velocidad y la aceleración siguen siendo la
+primera y la segunda derivada, pero ahora se derivan las **tres componentes**:
+
+```
+r(t) = ( x(t),  y(t),  z(t)  )
+v(t) = r'(t)  = ( x'(t),  y'(t),  z'(t)  )   → vector velocidad
+a(t) = r''(t) = ( x''(t), y''(t), z''(t) )   → vector aceleración
+```
+
 ---
 
 ## 🗂️ Estructura del Proyecto
@@ -34,10 +46,12 @@ Para la función por defecto:
 modelo_diferencial/
 │
 ├── main.py                 ← Archivo principal (ejecutar este)
-├── modelo.py               ← Núcleo matemático compartido (derivadas, puntos críticos)
-├── graficos.py             ← Gráficos con Matplotlib
-├── simulacion_pygame.py    ← Simulación de un objeto sobre una línea (Pygame)
-├── simulacion_cohete.py    ← Cohete recorriendo la curva en el plano (Pygame)
+├── modelo.py               ← Núcleo matemático compartido (2D y 3D)
+├── graficos.py             ← Gráficos con Matplotlib (2D)
+├── simulacion_pygame.py    ← Objeto sobre una línea (Pygame, 2D)
+├── simulacion_cohete.py    ← Cohete recorriendo la curva s(t) (Pygame, 2D)
+├── simulacion_3d.py        ← Cohete recorriendo r(t)=(x,y,z) (Pygame, 3D)
+├── unity/                  ← Versión 3D para Unity (scripts C# + guía)
 └── README.md               ← Este archivo
 ```
 
@@ -74,14 +88,16 @@ python main.py
 
 Luego elige una opción del menú:
 ```
-[1]  Gráficos matemáticos         (Matplotlib)
-[2]  Simulación objeto en línea    (Pygame)
-[3]  Cohete en plano cartesiano    (Pygame)
-[4]  Todo junto (misma función)
+[1]  Gráficos matemáticos          (Matplotlib, 2D)
+[2]  Simulación objeto en línea     (Pygame, 2D)
+[3]  Cohete en plano cartesiano     (Pygame, 2D)
+[4]  Cohete en 3D — r(t)=(x,y,z)    (Pygame)
+[5]  Todo junto 2D (misma función s(t))
 [0]  Salir
 ```
 
-Y a continuación selecciona la función `s(t)` (o escribe la tuya con `0`).
+Las opciones 2D piden una función escalar `s(t)`; la opción 3D pide las tres
+componentes `x(t)`, `y(t)`, `z(t)` (o eliges una curva de ejemplo).
 Cada script también puede ejecutarse por separado; en ese caso pedirá la
 función directamente.
 
@@ -89,11 +105,13 @@ función directamente.
 
 ## 🎮 Controles de las Simulaciones (Pygame)
 
-| Tecla | Acción |
-|-------|--------|
+| Tecla / Acción | Efecto |
+|----------------|--------|
 | `SPACE` | Pausar / Reanudar |
 | `R` | Reiniciar desde t = 0 |
-| `↑` / `↓` | Más / menos velocidad de simulación *(solo cohete)* |
+| `↑` / `↓` | Más / menos velocidad de simulación |
+| Arrastrar mouse | Rotar la cámara *(solo 3D)* |
+| Rueda del mouse | Acercar / alejar *(solo 3D)* |
 | `ESC` | Salir |
 
 ---
@@ -120,6 +138,15 @@ función directamente.
 - Cohete que vuela por la curva `s(t)` (eje X = tiempo, eje Y = posición).
 - La **nariz del cohete sigue la pendiente real de la curva en pantalla**.
 - HUD de vuelo con valores en tiempo real, barras y estado (ascendiendo / descendiendo, acelerando / frenando).
+
+### Cohete en 3D (Pygame)
+- Recorre una curva **vectorial** `r(t) = (x(t), y(t), z(t))` en un espacio 3D
+  (motor de proyección propio: rotación + perspectiva, sin librerías extra).
+- Dibuja la trayectoria completa, los ejes X/Y/Z y una rejilla de suelo.
+- Muestra los **vectores velocidad** (verde, tangente a la curva) y
+  **aceleración** (naranja) saliendo del cohete.
+- HUD con `t`, `r(t)`, `v(t)`, `a(t)` y sus magnitudes `|v|`, `|a|`.
+- Cámara orbital con el mouse y zoom con la rueda.
 
 ---
 
